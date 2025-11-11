@@ -30,7 +30,7 @@ void InOut::Sound::Speaker::write_value(int value)
 {
   if (value < MIN_FREQUENCY)
   {
-    value = MIN_FREQUENCY;
+    
   }
 
   if (value > MAX_FREQUENCY)
