@@ -1,6 +1,12 @@
 #include "InOutBase.hpp"
 
 /**
+ * Give this as an argument to concrete implementations that do not
+ * require a physical pin, like composites or decorators.
+ */
+const int InOut::InOutBase::NO_PIN_AFFECTED{ -1 };
+
+/**
  * Initializes this InOutBase with the provided pin number.
  * @param pin_number must correspond to a physical pin on the Arduino board.
  */

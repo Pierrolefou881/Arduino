@@ -14,6 +14,7 @@ namespace InOut
   class InOutBase
   {
     public:
+      static const int NO_PIN_AFFECTED;
       Util::Memory::S_ptr<Util::Event::Callback<const InOutBase, int>> StateChanged{ };
 
       virtual ~InOutBase(void) = default;
