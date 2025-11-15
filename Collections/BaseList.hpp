@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BaseIterator.hpp"
+
 namespace Util
 {
   namespace Collection

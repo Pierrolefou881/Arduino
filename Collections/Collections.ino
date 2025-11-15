@@ -1,11 +1,12 @@
 #define _LINKED_LIST
-#define _TEST_LED
+// #define _TEST_LED
 
 #include "ArrayList.hpp"
 #include "LinkedList.hpp"
 #include <DigitalOutput.hpp>
 #include <InOutFactory.hpp>
 #include <U_ptr.hpp>
+#include "LinkedListIterator.hpp"
 
 Util::Memory::U_ptr<Util::Collection::BaseList<char>> list{ };
 Util::Memory::U_ptr<Util::Collection::BaseList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>> leds{ };
@@ -89,11 +90,23 @@ void loop()
 
 void print_list()
 {
+  #ifdef _LINKED_LIST
+  auto linked = static_cast<Util::Collection::LinkedList<char>*>(list.get());
+  Util::Collection::LinkedListIterator<char> iterator{ linked };
+  while (iterator.has_next())
+  {
+    Serial.print(iterator.get());
+    Serial.print(", ");
+    iterator.next();
+  }
+
+  #else
   for (unsigned int i = 0; i < list->size(); i++)
   {
     Serial.print(list->at(i));
     Serial.print(", ");
   }
+  #endif
   Serial.print('\t');
   if (list->contains('B'))
   {

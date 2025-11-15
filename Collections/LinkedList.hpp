@@ -1,5 +1,4 @@
 #pragma once
-
 #include "BaseList.hpp"
 #include <S_ptr.hpp>
 
@@ -7,6 +6,9 @@ namespace Util
 {
   namespace Collection
   {
+    template<typename U>
+    class LinkedListIterator;
+
     template<typename T>
     class LinkedList : public BaseList<T>
     {
@@ -37,6 +39,7 @@ namespace Util
         auto tmp = insertion_link->_next;
         insertion_link->_next = new LinkedList(data);
         insertion_link->_next->_next = tmp;
+        return true;
       }
 
       /**
@@ -161,6 +164,8 @@ namespace Util
         // Call recursively, add 1 for each non null link
         return _next != nullptr ? 1 + _next->size() : 0;
       }
+
+      friend class LinkedListIterator<T>;
 
     private:
       Util::Memory::S_ptr<LinkedList<T>> _next{ };
