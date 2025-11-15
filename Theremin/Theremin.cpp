@@ -1,7 +1,6 @@
 #include "Theremin.hpp"
 #include <InOutFactory.hpp>
-#include <CallbackFactory.hpp>
-#include <Callback.hpp>
+#include "EventHandler.hpp"
 #include <limits.h>
 #include <Arduino.h>
 
@@ -16,12 +15,13 @@ const int Music::Theremin::CALIBRATION_COMPLETE{ 0 };
  * write down any change.
  */
 Music::Theremin::Theremin(int sensor_pin, int speaker_pin, int sound_duration)
-  : _sensor{ InOut::Factory::InOutFactory::create_analog_input(sensor_pin) }
+  : CalibrationStatusChanged{ new Util::Event::EventHandler<const Theremin, int>{ } }
+  , _sensor{ InOut::Factory::InOutFactory::create_analog_input(sensor_pin) }
   , _speaker{ InOut::Factory::InOutFactory::create_speaker(speaker_pin, sound_duration) }
   , _lower_threshold{ INT_MAX }
   , _uppper_threshold{ 0 }
 {
-  _sensor->StateChanged = Util::Event::CallbackFactory::create_callback(this, &Theremin::play_note);
+  _sensor->StateChanged->add(this, &Theremin::play_note);
 }
 
 /**
@@ -48,12 +48,12 @@ void Music::Theremin::calibrate(unsigned long time_ms)
 
   if (!_calibration_timer)
   {
-    on_calibration_status_changed(CALIBRATION_ACTIVE);
+    CalibrationStatusChanged->call(this, CALIBRATION_ACTIVE);
     _calibration_timer = new Time::Timer{ };
     Time::TimeData timer_duration{ };
     timer_duration.second = CALIBRATION_DELAY_S;
     _calibration_timer->set_time_stamp(timer_duration);
-    _calibration_timer->CountdownComplete = Util::Event::CallbackFactory::create_callback(this, &calibration_timer_expired);
+    _calibration_timer->CountdownComplete->add(this, &calibration_timer_expired);
     _calibration_timer->start();
   }
 
@@ -105,16 +105,8 @@ void Music::Theremin::play_note(const InOut::InOutBase* sender, int args)
   }
 }
 
-void Music::Theremin::on_calibration_status_changed(int status) const
-{
-  if (CalibrationStatusChanged)
-  {
-    CalibrationStatusChanged->call(this, status);
-  }
-}
-
 void Music::Theremin::calibration_timer_expired(const Time::Timer* sender, void* args)
 {
   _is_calibrated = true;
-  on_calibration_status_changed(CALIBRATION_COMPLETE);
+  CalibrationStatusChanged->call(this, CALIBRATION_COMPLETE);
 }

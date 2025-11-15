@@ -1,18 +1,17 @@
-#include "InOutBase.hpp"
 #pragma once
-
 #include <S_ptr.hpp>
+#include <U_ptr.hpp>
 #include <AnalogInput.hpp>
 #include <Speaker.hpp>
 #include <Timer.hpp>
-#include <Callback.hpp>
+#include <EventHandler.hpp>
 
 namespace Music
 {
   class Theremin
   {
   public:
-    Util::Memory::S_ptr<Util::Event::Callback<const Theremin, int>> CalibrationStatusChanged{ };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const Theremin, int>> CalibrationStatusChanged{ };
 
     Theremin(int sensor_pin, int speaker_pin, int sound_duration = InOut::Sound::Speaker::DEFAULT_DURATION_MS);
     virtual ~Theremin(void) = default;
@@ -36,7 +35,6 @@ namespace Music
     int _uppper_threshold{ };
     
     void play_note(const InOut::InOutBase* sender, int args);
-    void on_calibration_status_changed(int status) const;
     void calibration_timer_expired(const Time::Timer* sender, void* args);
   };
 }

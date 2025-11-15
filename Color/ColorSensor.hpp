@@ -1,5 +1,4 @@
 #pragma once
-
 #include <stdint.h>
 #include <S_ptr.hpp>
 #include <AnalogInput.hpp>

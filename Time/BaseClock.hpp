@@ -1,7 +1,6 @@
 #pragma once
 #include <S_ptr.hpp>
 #include <U_ptr.hpp>
-#include <Callback.hpp>
 #include <EventHandler.hpp>
 
 namespace Time

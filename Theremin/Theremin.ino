@@ -22,7 +22,7 @@ void setup() {
   Serial.begin(9600);
   theremin = new Music::Theremin{ A0, 8 };
   status_led = new StatusLed{ LED_BUILTIN };
-  theremin->CalibrationStatusChanged = Util::Event::CallbackFactory::create_callback(status_led.get(), &StatusLed::system_status_changed);
+  theremin->CalibrationStatusChanged->add(status_led.get(), &StatusLed::system_status_changed);
 }
 
 void loop() {

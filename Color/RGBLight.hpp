@@ -1,5 +1,4 @@
 #pragma once
-
 #include <S_ptr.hpp>
 #include <PWMOutput.hpp>
 #include <InOutFactory.hpp>
