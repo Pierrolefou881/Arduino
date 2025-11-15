@@ -9,6 +9,11 @@ namespace Util
     template<typename U>
     class LinkedListIterator;
 
+    /**
+     * Dynamic LinkedList that can be used when
+     * accessing specific indices is not performance
+     * crucial.
+     */
     template<typename T>
     class LinkedList : public BaseList<T>
     {

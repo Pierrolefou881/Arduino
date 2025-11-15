@@ -1,8 +1,8 @@
 #pragma once
-
 #include <S_ptr.hpp>
 #include <U_ptr.hpp>
-#include "Callback.hpp"
+#include <Callback.hpp>
+#include <EventHandler.hpp>
 
 namespace Time
 {
@@ -29,10 +29,10 @@ namespace Time
   class BaseClock
   {
   public:
-    Util::Memory::S_ptr<Util::Event::Callback<const BaseClock, const TimeData&>> SecondElapsed{ };
-    Util::Memory::S_ptr<Util::Event::Callback<const BaseClock, const TimeData&>> MinuteElapsed{ };
-    Util::Memory::S_ptr<Util::Event::Callback<const BaseClock, const TimeData&>> HourElapsed{ };
-    Util::Memory::S_ptr<Util::Event::Callback<const BaseClock, const TimeData&>> DayElapsed{ };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const BaseClock, const TimeData&>> SecondElapsed{ new Util::Event::EventHandler<const BaseClock, const TimeData&> };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const BaseClock, const TimeData&>> MinuteElapsed{ new Util::Event::EventHandler<const BaseClock, const TimeData&> };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const BaseClock, const TimeData&>> HourElapsed{ new Util::Event::EventHandler<const BaseClock, const TimeData&> };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const BaseClock, const TimeData&>> DayElapsed{ new Util::Event::EventHandler<const BaseClock, const TimeData&> };
 
     virtual ~BaseClock(void) = default;
     virtual void tick(unsigned long tick_time_ms);

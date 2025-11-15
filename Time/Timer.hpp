@@ -1,8 +1,6 @@
-#include "Callback.hpp"
-#include "S_ptr.hpp"
 #pragma once
-
 #include "Stopwatch.hpp"
+#include <U_ptr.hpp>
 
 namespace Time 
 {
@@ -14,7 +12,7 @@ namespace Time
   class Timer : public Stopwatch
   {
   public:
-    Util::Memory::S_ptr<Util::Event::Callback<const Timer, void*>> CountdownComplete{ };
+    Util::Memory::U_ptr<Util::Event::EventHandler<const Timer, void*>> CountdownComplete{ new Util::Event::EventHandler<const Timer, void*> };
 
     virtual ~Timer(void) = default;
 

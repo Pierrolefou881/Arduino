@@ -1,6 +1,6 @@
 // #define _STOPWATCH
 #define _TIMER
-// #define _METHOD
+#define _METHOD
 
 #include "BaseClock.hpp"
 #include "Stopwatch.hpp"
@@ -11,6 +11,7 @@
 #include <S_ptr.hpp>
 #include <U_ptr.hpp>
 #include <CallbackFactory.hpp>
+#include "EventHandler.hpp"
 
 class Blinker
 {
@@ -39,13 +40,18 @@ public:
 };
 
 Util::Memory::U_ptr<Blinker> blk{ };
+Util::Memory::U_ptr<Blinker> blue_blk{ };
 Util::Memory::U_ptr<Buzzer> buzz{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> blue{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> red{ };
 Util::Memory::U_ptr<Time::BaseClock> clk{ };
 
 void setup() {
   Serial.begin(9600);
   led = InOut::Factory::InOutFactory::create_digital_output(LED_BUILTIN);
+  blue = InOut::Factory::InOutFactory::create_digital_output(2);
+  red = InOut::Factory::InOutFactory::create_digital_output(7);
   buzz = new Buzzer{ };
   buzz->speaker = InOut::Factory::InOutFactory::create_speaker(8);
 
@@ -56,11 +62,11 @@ void setup() {
   #elif defined(_TIMER)
   clk = new Time::Timer{ };
   Time::TimeData setting{ };
-  setting.hour = 1;
-  setting.minute = 2;
+  setting.hour = 0;
+  setting.minute = 0;
   setting.second = 15;
   clk->set_time_stamp(setting);
-  static_cast<Time::Timer*>(clk.get())->CountdownComplete = Util::Event::CallbackFactory::create_callback(buzz.get(), &Buzzer::on_timer_elapsed);
+  static_cast<Time::Timer*>(clk.get())->CountdownComplete->add(buzz.get(), &Buzzer::on_timer_elapsed);
   static_cast<Time::Timer*>(clk.get())->start();
 
   #else
@@ -73,10 +79,14 @@ void setup() {
 
   #ifdef _METHOD
   blk = new Blinker{ };
+  blue_blk = new Blinker{ };
   blk->_led = led;
-  clk->SecondElapsed = Util::Event::CallbackFactory::create_callback(blk.get(), &Blinker::toggle);
+  blue_blk->_led = blue;
+  clk->SecondElapsed->add(blk.get(), &Blinker::toggle);
+  clk->SecondElapsed->add(blue_blk.get(), &Blinker::toggle);
+  clk->SecondElapsed->add(&toggle_led);
   #else
-  clk->SecondElapsed = Util::Event::CallbackFactory::create_callback(&toggle_led);
+  clk->SecondElapsed->add(&toggle_led);
   #endif
 }
 
@@ -95,11 +105,11 @@ void loop() {
   {
     buzz->speaker->write_value(440);
   }
-  // delay(250);
+  delay(250);
 }
 
 void toggle_led(const Time::BaseClock* clock, const Time::TimeData& time_stamp)
 {
-  led->toggle();
+  red->toggle();
   Serial.println("SECOND");
 }

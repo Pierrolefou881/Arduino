@@ -7,6 +7,11 @@ namespace Util
 {
   namespace Collection
   {
+    /**
+     * Concrete implementation of BaseIterator to be used with
+     * LinkedList. Greatly improves performance when iterating over
+     * all the collection.
+     */
     template<typename T>
     class LinkedListIterator : public BaseIterator<T>
     {
