@@ -4,6 +4,9 @@ namespace Util
 {
   namespace Collection
   {
+    /**
+     * Defines basic behavior for all list type collections.
+     */
     template<typename T>
     class BaseList
     {

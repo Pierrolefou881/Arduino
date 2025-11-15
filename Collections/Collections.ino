@@ -1,13 +1,14 @@
-#define _TEST
+#define _LINKED_LIST
 #define _TEST_LED
 
 #include "ArrayList.hpp"
+#include "LinkedList.hpp"
 #include <DigitalOutput.hpp>
 #include <InOutFactory.hpp>
 #include <U_ptr.hpp>
 
-Util::Collection::ArrayList<char> list{ };
-Util::Memory::U_ptr<Util::Collection::ArrayList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>> leds{ };
+Util::Memory::U_ptr<Util::Collection::BaseList<char>> list{ };
+Util::Memory::U_ptr<Util::Collection::BaseList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>> leds{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> red{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> yellow1{ };
@@ -18,7 +19,13 @@ Util::Memory::S_ptr<InOut::Digital::DigitalOutput> blue{ };
 
 void setup() {
   // put your setup code here, to run once:
+  #ifdef _LINKED_LIST
+  list = new Util::Collection::LinkedList<char>{ };
+  leds = new Util::Collection::LinkedList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>{ };
+  #else
+  list = new Util::Collection::ArrayList<char> { };
   leds = new Util::Collection::ArrayList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>{ };
+  #endif
   Serial.begin(9600);
   led = InOut::Factory::InOutFactory::create_digital_output(LED_BUILTIN);
   red = InOut::Factory::InOutFactory::create_digital_output(7);
@@ -49,28 +56,28 @@ void loop()
   }
 
   #else
-  if (list.size() < 6)
+  if (list->size() < 6)
   {
-    list.append('A');
+    list->append('A');
   }
-  else if (list.size() < 10)
+  else if (list->size() < 10)
   {
-    list.add('B', 3);
+    list->add('B', 3);
   }
-  else if (list.size() < 13)
+  else if (list->size() < 13)
   {
-    list.add('C');
+    list->add('C');
   }
   else
   {
-    // list.remove_at(5);
-    // list.remove_at(5);
-    // list.remove_at(5);
+    // list->remove_at(5);
+    // list->remove_at(5);
+    // list->remove_at(5);
 
-    // list.remove('B');
-    list.remove_all('B');
+    // list->remove('B');
+    list->remove_all('B');
 
-    // list.clear();
+    // list->clear();
   }
 
   print_list();
@@ -82,15 +89,15 @@ void loop()
 
 void print_list()
 {
-  for (unsigned int i = 0; i < list.size(); i++)
+  for (unsigned int i = 0; i < list->size(); i++)
   {
-    Serial.print(list[i]);
+    Serial.print(list->at(i));
     Serial.print(", ");
   }
   Serial.print('\t');
-  if (list.contains('B'))
+  if (list->contains('B'))
   {
     Serial.print("\t B detected");
   }
-  Serial.println(list.array_length());
+  Serial.println(list->size());
 }

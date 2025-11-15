@@ -181,14 +181,6 @@ namespace Util
         return _current_size;
       }
 
-      // TEST method, not relevant when deployed.
-      #ifdef _TEST
-      unsigned int array_length(void) const
-      {
-        return _array_capacity;
-      }
-      #endif
-
     private:
       static const unsigned int _DEFAULT_SIZE = 3;
       static const unsigned int _RESIZE_FACTOR = 2;
