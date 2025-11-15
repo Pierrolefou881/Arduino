@@ -1,7 +1,6 @@
 #pragma once
-
-#include <S_ptr.hpp>
-#include <Callback.hpp>
+#include <U_ptr.hpp>
+#include <EventHandler.hpp>
 
 namespace InOut
 {
@@ -15,7 +14,7 @@ namespace InOut
   {
     public:
       static const int NO_PIN_AFFECTED;
-      Util::Memory::S_ptr<Util::Event::Callback<const InOutBase, int>> StateChanged{ };
+      Util::Memory::U_ptr<Util::Event::EventHandler<const InOutBase, int>> StateChanged{ };
 
       virtual ~InOutBase(void) = default;
       int get_pin_number(void) const;
@@ -24,8 +23,6 @@ namespace InOut
       InOutBase(int pin_number);
       int get_current_state(void) const;
       void set_current_state(int current_state);
-
-      void on_state_changed(void) const;
 
     private:
       int _pin_number{ };

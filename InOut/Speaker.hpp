@@ -1,5 +1,4 @@
 #pragma once
-
 #include "OutputBase.hpp"
 
 namespace InOut

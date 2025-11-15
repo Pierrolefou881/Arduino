@@ -1,5 +1,5 @@
-#include "Arduino.h"
 #include "Speaker.hpp"
+#include "Arduino.h"
 
 /** Minimal frequency that can be played by this Speaker, in Hz */
 const int InOut::Sound::Speaker::MIN_FREQUENCY{ 50 };
@@ -30,7 +30,7 @@ void InOut::Sound::Speaker::write_value(int value)
 {
   if (value < MIN_FREQUENCY)
   {
-    
+    value = 0;
   }
 
   if (value > MAX_FREQUENCY)

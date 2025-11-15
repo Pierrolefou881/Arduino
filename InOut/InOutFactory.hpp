@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Speaker.hpp"
 
 namespace Util

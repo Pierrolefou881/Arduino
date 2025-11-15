@@ -10,9 +10,11 @@ const int InOut::InOutBase::NO_PIN_AFFECTED{ -1 };
  * Initializes this InOutBase with the provided pin number.
  * @param pin_number must correspond to a physical pin on the Arduino board.
  */
-InOut::InOutBase::InOutBase(int pin_number)
+InOut::InOutBase::InOutBase(int pin_number) 
+  : _pin_number{ pin_number }
+  , StateChanged{ new Util::Event::EventHandler<const InOutBase, int> }
 {
-  _pin_number = pin_number;
+  // Empty body
 }
 
 /**
@@ -41,14 +43,6 @@ void InOut::InOutBase::set_current_state(int current_state)
   if (_current_state != current_state)
   {
     _current_state = current_state;
-    on_state_changed();
-  }
-}
-
-void InOut::InOutBase::on_state_changed(void) const
-{
-  if (StateChanged)
-  {
-    StateChanged->call(this, _current_state);
+    StateChanged->call(this, current_state);
   }
 }
