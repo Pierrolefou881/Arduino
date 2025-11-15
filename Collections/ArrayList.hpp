@@ -1,5 +1,5 @@
-#include "Arduino.h"
 #pragma once
+#include "BaseList.hpp"
 
 namespace Util
 {
@@ -11,18 +11,18 @@ namespace Util
      * to avoid errors.
      */
     template <typename T>
-    class ArrayList
+    class ArrayList : public BaseList<T>
     {
     public:
       /**
-       * Adds the spedified element at the given index. if
+       * Adds the specified element at the given index. if
        * no index is specified, pushes the object at the
        * beginning of this ArrayList.
        * @param data to add.
        * @param index of insertion. Default value is 0.
        * @return true if insertion successful, false otherwise.
        */
-      bool add(const T& data, unsigned int index = 0)
+      bool add(const T& data, unsigned int index = 0) override
       {
         // Fail if out of bounds.
         if (index >= _current_size)
@@ -50,7 +50,7 @@ namespace Util
        * ArrayList.
        * @param data to append.
        */
-      void append(const T& data)
+      void append(const T& data) override
       {
         check_size(_current_size + 1);
         _data[_current_size] = data;
@@ -59,10 +59,11 @@ namespace Util
 
       /**
        * Removes element at given index, if it
-       * exists. Does nothing otherwise.
+       * exists. Does nothing otherwise. If not index
+       * is provided, tries to remove the first item.
        * @param index of the removal.
        */
-      void remove_at(unsigned int index = 0)
+      void remove_at(unsigned int index = 0) override
       {
         // if out of bounds, do nothing.
         if (index >= _current_size)
@@ -86,7 +87,7 @@ namespace Util
        * not present.
        * @param data to remove.
        */
-      void remove(const T& data)
+      void remove(const T& data) override
       {
         // Search for object
         unsigned int current_index;
@@ -112,7 +113,7 @@ namespace Util
        * from this ArrayList. Does nothing if none is present.
        * @param data to remove.
        */
-      void remove_all(const T& data)
+      void remove_all(const T& data) override
       {
         // Check all values
         for(int current_index = _current_size - 1; current_index >= 0; current_index--)
@@ -137,7 +138,7 @@ namespace Util
       /**
        * Removes all elements from this ArrayList.
        */
-      void clear()
+      void clear() override
       {
         _current_size = 0;
         check_size(_current_size);
@@ -147,16 +148,13 @@ namespace Util
        * Gets the element at the specified index.
        * If no index is specified, pops the first element,
        * if possible. If no item found, gets a default value.
+       * CAUTION: Ensure index is within bounds, Arduino does not provide
+       *          stdexcept for such cases.
        * @param index of the object to look for.
        * @return element at index, or default value.
        */
-      T at(unsigned int index = 0)
+      T& at(unsigned int index = 0) override
       {
-        // If out of bounds, return default value
-        if(index >= _current_size)
-        {
-          return T{ };
-        }
         return _data[index];
       }
 
@@ -165,7 +163,7 @@ namespace Util
        * @return true if at least one occurrence of data exists in this ArrayList,
        *         false otherwise.
        */
-      bool contains(const T& data) const
+      bool contains(const T& data) const override
       {
         unsigned int current_index;
         for (current_index = 0; 
@@ -178,14 +176,9 @@ namespace Util
       /**
        * @return the size of this ArrayList.
        */
-      unsigned int size(void) const
+      unsigned int size(void) const override
       {
         return _current_size;
-      }
-
-      T operator [](unsigned int index)
-      {
-        return at(index);
       }
 
       // TEST method, not relevant when deployed.

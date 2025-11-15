@@ -1,4 +1,5 @@
 #define _TEST
+#define _TEST_LED
 
 #include "ArrayList.hpp"
 #include <DigitalOutput.hpp>
@@ -6,16 +7,48 @@
 #include <U_ptr.hpp>
 
 Util::Collection::ArrayList<char> list{ };
-Util::Memory::U_ptr<InOut::Digital::DigitalOutput> led{ };
+Util::Memory::U_ptr<Util::Collection::ArrayList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>> leds{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> red{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> yellow1{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> yellow2{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> green1{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> green2{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> blue{ };
 
 void setup() {
   // put your setup code here, to run once:
+  leds = new Util::Collection::ArrayList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>{ };
   Serial.begin(9600);
   led = InOut::Factory::InOutFactory::create_digital_output(LED_BUILTIN);
+  red = InOut::Factory::InOutFactory::create_digital_output(7);
+  yellow1 = InOut::Factory::InOutFactory::create_digital_output(6);
+  yellow2 = InOut::Factory::InOutFactory::create_digital_output(5);
+  green1 = InOut::Factory::InOutFactory::create_digital_output(4);
+  green2 = InOut::Factory::InOutFactory::create_digital_output(3);
+  blue = InOut::Factory::InOutFactory::create_digital_output(2);
+
+  // leds.append(red.get());
+  // leds.append(blue.get());
+  // leds.append(green.get());
+
+  leds->append(red);
+  leds->append(yellow1);
+  leds->append(yellow2);
+  leds->append(green1);
+  leds->append(green2);
+  leds->append(blue);
 }
 
 void loop() 
 {
+  #ifdef _TEST_LED
+  for (auto i = 0; i < leds->size(); i++)
+  {
+    leds->at(i)->toggle();
+  }
+
+  #else
   if (list.size() < 6)
   {
     list.append('A');
@@ -41,6 +74,7 @@ void loop()
   }
 
   print_list();
+  #endif
 
   led->toggle();
   delay(1000);
