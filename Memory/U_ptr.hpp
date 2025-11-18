@@ -27,12 +27,12 @@ namespace Util
       U_ptr(T* data) : Smart_ptr<T>{ data } { /*Empty body*/ }
 
       /* Copy and move -> change data ownership */
-      U_ptr(const U_ptr<T>& other) 
+      U_ptr(const U_ptr<T>& other) : Smart_ptr<T>{ }
       {
         change_ownership(other);
       }
 
-      U_ptr(U_ptr<T>&& other) noexcept 
+      U_ptr(U_ptr<T>&& other) noexcept : Smart_ptr<T>{ }
       {
         change_ownership(other);
       }

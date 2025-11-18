@@ -1,64 +1,86 @@
-#include "InOutFactory.hpp"
 #include "S_ptr.hpp"
-#include "DigitalOutput.hpp"
-#include "InOutBase.hpp"
-#include "OutputBase.hpp"
+#include "HardwareSerial.h"
 #include "HourglassDisplay.hpp"
+#include <DigitalOutput.hpp>
+#include <InOutFactory.hpp>
+#include <ArrayList.hpp>
+#include <LinkedList.hpp>
+#include <LinkedListIterator.hpp>
+#include <BaseClock.hpp>
 
-const int InOut::Digital::HourglassDisplay::SIZE{ 6 };
+#include <Arduino.h>
 
-InOut::Digital::HourglassDisplay::HourglassDisplay(int blue, int low_green, int high_green, int low_yellow, int high_yellow, int red, int seconds) 
-  : InOut::OutputBase::OutputBase{ InOut::InOutBase::NO_PIN_AFFECTED }
-  , _blue{ InOut::Factory::InOutFactory::create_digital_output(blue) }
-  , _low_green{ InOut::Factory::InOutFactory::create_digital_output(low_green) }
-  , _high_green{ InOut::Factory::InOutFactory::create_digital_output(high_green) }
-  , _low_yellow{ InOut::Factory::InOutFactory::create_digital_output(low_yellow) }
-  , _high_yellow{ InOut::Factory::InOutFactory::create_digital_output(high_yellow) }
-  , _red{ InOut::Factory::InOutFactory::create_digital_output(red) }
-  , _seconds{ InOut::Factory::InOutFactory::create_digital_output(seconds) }
+/**
+ * Initializes this HourglassDisplay with the provided list of DigitalOutput instances
+ * that should be connected to leds.
+ * @param leds ensure item at index 0 is the second blinking led, then 1 for 10 minutes, 2 for 20...
+ */
+InOut::Digital::HourglassDisplay::HourglassDisplay(Util::Collection::LinkedList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>* leds) 
+  : OutputBase(NO_PIN_AFFECTED)
+  , _leds{ new Util::Collection::ArrayList<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>>{ } }
+  , _next_index{ 1 }
 {
-  // Empty body
+  Util::Collection::LinkedListIterator<Util::Memory::S_ptr<InOut::Digital::DigitalOutput>> iterator{ leds };
+  while (iterator.has_next())
+  {
+    _leds->append(iterator.get());
+    iterator.next();
+  }
 }
 
+/**
+ * Translates tens of minutes into an ignited led.
+ * @param value number of minutes, greater than 10.
+ */
 void InOut::Digital::HourglassDisplay::write_value(int value)
 {
-  _blue->write_value(value);
-  _low_green->write_value(value);
-  _high_green->write_value(value);
-  _low_yellow->write_value(value);
-  _high_yellow->write_value(value);
-  _red->write_value(value);
-}
-
-void InOut::Digital::HourglassDisplay::on_minute_elapsed(const Time::BaseClock *sender, const Time::TimeData &args)
-{
-  if (args.minute < 50);
+  auto index = value / 10;
+  if (index == _next_index)
   {
-    _blue->turn_on();
+    _next_index++;
   }
-  if (args.minute < 40)
+  for (auto i = 1; i <= index; i++)
   {
-    _low_green->turn_on();
-  }
-  if (args.minute < 30)
-  {
-    _high_green->turn_on();
-  }
-  if (args.minute < 20)
-  {
-    _low_yellow->turn_on();
-  }
-  if (args.minute < 10)
-  {
-    _high_yellow->turn_on();
-  }
-  if (args.minute == 0 && args.hour == 0)
-  {
-    _red->turn_on();
+    _leds->at(index)->turn_on();
   }
 }
 
-void InOut::Digital::HourglassDisplay::on_second_elapsed(const Time::BaseClock *sender, const Time::TimeData &args)
+/**
+ * Resets this HourglassDisplay by turning off all leds.
+ */
+void InOut::Digital::HourglassDisplay::reset(void)
 {
-  _seconds->toggle();
+  for (auto i = 1; i < _leds->size(); i++)
+  {
+    _leds->at(i)->turn_off();
+  }
+  _next_index = 1;
+}
+
+/**
+ * Updates the display at each minute.
+ * @param sender unused.
+ * @param args used for minutes.
+ */
+void InOut::Digital::HourglassDisplay::on_minute_elapsed(const Time::BaseClock *sender, const Time::TimeData& args)
+{
+  if (args.hour >= 1 || args.minute < 10)
+  {
+    return;
+  }
+  write_value(args.minute);
+}
+
+/**
+ * Blinks the seconds led once every second.
+ * @param sender unused.
+ * @param args unused.
+ */
+void InOut::Digital::HourglassDisplay::on_second_elapsed(const Time::BaseClock *sender, const Time::TimeData& args)
+{
+  _leds->at(0)->toggle();
+  if (_next_index < _leds->size())
+  {
+    _leds->at(_next_index)->toggle();
+  }
 }

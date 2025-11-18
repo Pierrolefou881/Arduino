@@ -1,5 +1,4 @@
 #pragma once
-
 #include "BaseIterator.hpp"
 #include "LinkedList.hpp"
 

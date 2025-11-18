@@ -7,6 +7,7 @@
 #include "Timer.hpp"
 #include <DigitalOutput.hpp>
 #include <Speaker.hpp>
+#include <DigitalInput.hpp>
 #include <InOutFactory.hpp>
 #include <S_ptr.hpp>
 #include <U_ptr.hpp>
@@ -40,34 +41,36 @@ public:
 };
 
 Util::Memory::U_ptr<Blinker> blk{ };
-Util::Memory::U_ptr<Blinker> blue_blk{ };
 Util::Memory::U_ptr<Buzzer> buzz{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
-Util::Memory::S_ptr<InOut::Digital::DigitalOutput> blue{ };
-Util::Memory::S_ptr<InOut::Digital::DigitalOutput> red{ };
 Util::Memory::U_ptr<Time::BaseClock> clk{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalInput> start_btn{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalInput> reset_btn{ };
 
 void setup() {
   Serial.begin(9600);
   led = InOut::Factory::InOutFactory::create_digital_output(LED_BUILTIN);
-  blue = InOut::Factory::InOutFactory::create_digital_output(2);
-  red = InOut::Factory::InOutFactory::create_digital_output(7);
   buzz = new Buzzer{ };
   buzz->speaker = InOut::Factory::InOutFactory::create_speaker(8);
+  start_btn = InOut::Factory::InOutFactory::create_digital_input(12);
+  reset_btn = InOut::Factory::InOutFactory::create_digital_input(11);
 
   #ifdef _STOPWATCH
   clk = new Time::Stopwatch{ };
-  static_cast<Time::Stopwatch*>(clk.get())->start();
+  start_btn->StateChanged->add(&start_pressed);
+  reset_btn->StateChanged->add(&reset_pressed);
 
   #elif defined(_TIMER)
+  start_btn->StateChanged->add(&start_pressed);
+  reset_btn->StateChanged->add(&reset_pressed);
   clk = new Time::Timer{ };
   Time::TimeData setting{ };
   setting.hour = 0;
   setting.minute = 0;
   setting.second = 15;
   clk->set_time_stamp(setting);
-  static_cast<Time::Timer*>(clk.get())->CountdownComplete->add(buzz.get(), &Buzzer::on_timer_elapsed);
-  static_cast<Time::Timer*>(clk.get())->start();
+  auto tm = static_cast<Time::Timer*>(clk.get());
+  tm->CountdownComplete->add(buzz.get(), &Buzzer::on_timer_elapsed);
 
   #else
   clk = new Time::BaseClock();
@@ -79,12 +82,8 @@ void setup() {
 
   #ifdef _METHOD
   blk = new Blinker{ };
-  blue_blk = new Blinker{ };
   blk->_led = led;
-  blue_blk->_led = blue;
   clk->SecondElapsed->add(blk.get(), &Blinker::toggle);
-  clk->SecondElapsed->add(blue_blk.get(), &Blinker::toggle);
-  clk->SecondElapsed->add(&toggle_led);
   #else
   clk->SecondElapsed->add(&toggle_led);
   #endif
@@ -93,6 +92,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   clk->tick(millis());
+  start_btn->read_value();
+  reset_btn->read_value();
   auto time_stamp = clk->get_time_stamp();
   Serial.print(time_stamp.hour);
   Serial.print("H\t");
@@ -105,11 +106,53 @@ void loop() {
   {
     buzz->speaker->write_value(440);
   }
-  delay(250);
+  delay(100);
 }
 
 void toggle_led(const Time::BaseClock* clock, const Time::TimeData& time_stamp)
 {
-  red->toggle();
+  led->toggle();
   Serial.println("SECOND");
+}
+
+void start_pressed(const InOut::InOutBase* sender, int args)
+{
+  Serial.println("START / STOP");
+  if (args == LOW)
+  {
+    return;
+  }
+  auto sw = static_cast<Time::Stopwatch*>(clk.get());
+  
+  if (sw->is_running())
+  {
+    sw->stop();
+  }
+  else 
+  {
+    sw->start();
+  }
+}
+
+void reset_pressed(const InOut::InOutBase* sender, int args)
+{
+  if (args == LOW)
+  {
+    return;
+  }
+auto sw = static_cast<Time::Stopwatch*>(clk.get());
+#ifdef _STOPWATCH
+  if (sw->is_running())
+  {
+    sw->stop();
+  }
+  else 
+  {
+    sw->reset();
+  }
+
+#else
+  sw->stop();
+  sw->reset();
+#endif
 }

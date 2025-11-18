@@ -1,5 +1,5 @@
-#define _LINKED_LIST
-// #define _TEST_LED
+// #define _LINKED_LIST
+#define _TEST_LED
 
 #include "ArrayList.hpp"
 #include "LinkedList.hpp"

@@ -3,13 +3,13 @@
 /**
  * Updates the TimeData member _time_stamp only if this
  * Stopwatch is active, i.e. it has been started.
- * @param tick_time_ms system clock time since power on in milliseconds.
+ * @param tick_duration_ms time elapsed since last call in milliseconds.
  */
-void Time::Stopwatch::tick(unsigned long tick_time_ms)
+void Time::Stopwatch::update_time_stamp(unsigned long tick_duration_ms)
 {
   if (is_active)
   {
-    Time::BaseClock::tick(tick_time_ms);
+    Time::BaseClock::update_time_stamp(tick_duration_ms);
   }
 }
 
@@ -19,6 +19,7 @@ void Time::Stopwatch::tick(unsigned long tick_time_ms)
 void Time::Stopwatch::start(void)
 {
   is_active = true;
+  OnStart->call(this, get_time_stamp());
 }
 
 /**
@@ -27,6 +28,7 @@ void Time::Stopwatch::start(void)
 void Time::Stopwatch::stop(void)
 {
   is_active = false;
+  OnStop->call(this, get_time_stamp());
 }
 
 /**
@@ -34,5 +36,14 @@ void Time::Stopwatch::stop(void)
  */
 void Time::Stopwatch::reset(void)
 {
-  set_time_stamp(Time::TimeData{});
+  set_time_stamp(Time::TimeData{ });
+  OnReset->call(this, get_time_stamp());
+}
+
+/**
+ * @return true if this Stopwatch is ticking, false otherwise.
+ */
+bool Time::Stopwatch::is_running(void) const
+{
+  return is_active;
 }

@@ -23,8 +23,8 @@ void Time::BaseClock::tick(unsigned long tick_time_ms)
     tick_duration = tick_time_ms - _last_tick;
   }
 
-  update_time_stamp(tick_duration);
   _last_tick = tick_time_ms;
+  update_time_stamp(tick_duration);
 }
 
 /**
@@ -62,7 +62,7 @@ void Time::BaseClock::update_time_stamp(unsigned long tick_duration_ms)
 
   _time_stamp->second += overflow;
   _time_stamp->millisecond %= Time::TimeData::MILLISECOND_TO_SECOND;
-  on_second_elapsed();
+  SecondElapsed->call(this, *_time_stamp);
 
   // Check for a new minute. If not, return here.
   overflow = _time_stamp->second / Time::TimeData::SECOND_MINUTE_HOUR;
@@ -73,7 +73,7 @@ void Time::BaseClock::update_time_stamp(unsigned long tick_duration_ms)
 
   _time_stamp->minute += overflow;
   _time_stamp->second %= Time::TimeData::SECOND_MINUTE_HOUR;
-  on_minute_elapsed();
+  MinuteElapsed->call(this, *_time_stamp);
 
   // Check for a new hour. If not, return here.
   overflow = _time_stamp->minute / Time::TimeData::SECOND_MINUTE_HOUR;
@@ -84,13 +84,13 @@ void Time::BaseClock::update_time_stamp(unsigned long tick_duration_ms)
 
   _time_stamp->hour += overflow;
   _time_stamp->minute %= Time::TimeData::SECOND_MINUTE_HOUR;
-  on_hour_elapsed();
+  HourElapsed->call(this, *_time_stamp);
 
   // Check for a new day, reset hours if so.
   if (_time_stamp->hour / Time::TimeData::HOUR_TO_DAY > 0)
   {
     _time_stamp->hour %= Time::TimeData::HOUR_TO_DAY;
-    on_day_elapsed();
+    DayElapsed->call(this, *_time_stamp);
   }
 }
 
@@ -101,48 +101,4 @@ void Time::BaseClock::update_time_stamp(unsigned long tick_duration_ms)
 Util::Memory::U_ptr<Time::TimeData>& Time::BaseClock::time_stamp_reference(void)
 {
   return _time_stamp;
-}
-
-/**
- * Fires up the SecondElapsed callback, if possible.
- */
-void Time::BaseClock::on_second_elapsed(void) const
-{
-  if (SecondElapsed)
-  {
-    SecondElapsed->call(this, *_time_stamp);
-  }
-}
-
-/**
- * Fires up the MinuteElapsed callback, if possible.
- */
-void Time::BaseClock::on_minute_elapsed(void) const
-{
-  if (MinuteElapsed)
-  {
-    MinuteElapsed->call(this, *_time_stamp);
-  }
-}
-
-/**
- * Fires up the HourElapsed callback, if possible.
- */
-void Time::BaseClock::on_hour_elapsed(void) const
-{
-  if (HourElapsed)
-  {
-    HourElapsed->call(this, *_time_stamp);
-  }
-}
-
-/**
- * Fires up the DayElapsed callback, if possible.
- */
-void Time::BaseClock::on_day_elapsed(void) const
-{
-  if (DayElapsed)
-  {
-    DayElapsed->call(this, *_time_stamp);
-  }
 }

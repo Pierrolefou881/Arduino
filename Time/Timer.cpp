@@ -1,21 +1,22 @@
 #include "Timer.hpp"
 
 /**
- * Keeps a reference to timer setting before starting the countdown.
- */
-void Time::Timer::start(void)
-{
-  // CAUTION: Make a copy, don't change ownership.
-  _timer_setting = time_stamp_reference().get();
-  Time::Stopwatch::start();
-}
-
-/**
  * Resets _time_stamp to the timer settings.
  */
 void Time::Timer::reset(void)
 {
-  time_stamp_reference() = _timer_setting.get();
+  set_time_stamp(*_timer_setting);
+  OnReset->call(this, get_time_stamp());
+}
+
+/**
+ * Replaces the _time_stamp member's value with the provided one.
+ * @param time_stamp new timer value to count down.
+ */
+void Time::Timer::set_time_stamp(const Time::TimeData& time_stamp)
+{
+  Time::Stopwatch::set_time_stamp(time_stamp);
+  _timer_setting = new Time::TimeData{ time_stamp };
 }
 
 /**
@@ -24,59 +25,56 @@ void Time::Timer::reset(void)
  */
 void Time::Timer::update_time_stamp(unsigned long tick_duration_ms)
 {
-  if (time_stamp_reference()->millisecond >= tick_duration_ms || drain_millis_from_seconds())
+  if (!is_running())
+  {
+    return;
+  }
+
+  if ((unsigned long) time_stamp_reference()->millisecond >= tick_duration_ms || drain_millis_from_seconds())
   {
     time_stamp_reference()->millisecond -= tick_duration_ms;
   }
   else 
   {
     time_stamp_reference()->millisecond = 0;
-    on_second_elapsed();
-    on_countdown_complete();
-  }
-}
-
-void Time::Timer::on_countdown_complete(void) const
-{
-  stop();
-  if (CountdownComplete)
-  {
+    SecondElapsed->call(this, get_time_stamp());
+    stop();
     CountdownComplete->call(this, nullptr);
   }
 }
 
-bool Time::Timer::drain_millis_from_seconds(void) const
+bool Time::Timer::drain_millis_from_seconds(void)
 {
   if (time_stamp_reference()->second > 0 || drain_seconds_from_minutes())
   {
     time_stamp_reference()->second--;
     time_stamp_reference()->millisecond += Time::TimeData::MILLISECOND_TO_SECOND;
-    on_second_elapsed();
+    SecondElapsed->call(this, get_time_stamp());
     return true;
   }
   return false;
 }
 
-bool Time::Timer::drain_seconds_from_minutes(void) const
+bool Time::Timer::drain_seconds_from_minutes(void)
 {
   if (time_stamp_reference()->minute > 0 || drain_minutes_from_hours())
   {
     time_stamp_reference()->minute--;
     time_stamp_reference()->second += Time::TimeData::SECOND_MINUTE_HOUR;
-    on_minute_elapsed();
+    MinuteElapsed->call(this, get_time_stamp());
     return true;
   }
   return false;
 }
 
-bool Time::Timer::drain_minutes_from_hours(void) const
+bool Time::Timer::drain_minutes_from_hours(void)
 {
   auto has_hours = time_stamp_reference()->hour > 0;
   if (has_hours)
   {
     time_stamp_reference()->hour--;
     time_stamp_reference()->minute += Time::TimeData::SECOND_MINUTE_HOUR;
-    on_hour_elapsed();
+    HourElapsed->call(this, get_time_stamp());
   }
   return has_hours;
 }

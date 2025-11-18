@@ -15,19 +15,17 @@ namespace Time
 
     virtual ~Timer(void) = default;
 
-    void start(void) override;
     void reset(void) override;
+    void set_time_stamp(const Time::TimeData& time_stamp) override;
 
   protected:
     void update_time_stamp(unsigned long tick_duration_ms) override;
 
   private:
     Util::Memory::U_ptr<TimeData> _timer_setting{ };
-    
-    void on_countdown_complete(void) const;
 
-    bool drain_millis_from_seconds(void) const;
-    bool drain_seconds_from_minutes(void) const;
-    bool drain_minutes_from_hours(void) const;
+    bool drain_millis_from_seconds(void);
+    bool drain_seconds_from_minutes(void);
+    bool drain_minutes_from_hours(void);
   };
 }

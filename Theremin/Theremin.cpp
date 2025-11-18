@@ -1,6 +1,6 @@
 #include "Theremin.hpp"
 #include <InOutFactory.hpp>
-#include "EventHandler.hpp"
+#include <EventHandler.hpp>
 #include <limits.h>
 #include <Arduino.h>
 
