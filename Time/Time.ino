@@ -1,5 +1,5 @@
-// #define _STOPWATCH
-#define _TIMER
+#define _STOPWATCH
+// #define _TIMER
 #define _METHOD
 
 #include "BaseClock.hpp"

@@ -19,7 +19,6 @@ void Time::Stopwatch::update_time_stamp(unsigned long tick_duration_ms)
 void Time::Stopwatch::start(void)
 {
   is_active = true;
-  OnStart->call(this, get_time_stamp());
 }
 
 /**
@@ -28,7 +27,6 @@ void Time::Stopwatch::start(void)
 void Time::Stopwatch::stop(void)
 {
   is_active = false;
-  OnStop->call(this, get_time_stamp());
 }
 
 /**
@@ -37,7 +35,6 @@ void Time::Stopwatch::stop(void)
 void Time::Stopwatch::reset(void)
 {
   set_time_stamp(Time::TimeData{ });
-  OnReset->call(this, get_time_stamp());
 }
 
 /**

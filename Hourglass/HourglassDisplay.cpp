@@ -1,13 +1,9 @@
-#include "S_ptr.hpp"
-#include "HardwareSerial.h"
 #include "HourglassDisplay.hpp"
 #include <DigitalOutput.hpp>
-#include <InOutFactory.hpp>
 #include <ArrayList.hpp>
 #include <LinkedList.hpp>
 #include <LinkedListIterator.hpp>
 #include <BaseClock.hpp>
-
 #include <Arduino.h>
 
 /**

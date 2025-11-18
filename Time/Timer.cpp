@@ -6,7 +6,6 @@
 void Time::Timer::reset(void)
 {
   set_time_stamp(*_timer_setting);
-  OnReset->call(this, get_time_stamp());
 }
 
 /**

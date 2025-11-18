@@ -1,5 +1,3 @@
-#include "LinkedList.hpp"
-#include "ArrayList.hpp"
 #pragma once
 #include <OutputBase.hpp>
 #include <S_ptr.hpp>
@@ -8,6 +6,9 @@ namespace Util
 {
   namespace Collection
   {
+    template <typename U>
+    class BaseList;
+
     template<typename T>
     class LinkedList;
   }

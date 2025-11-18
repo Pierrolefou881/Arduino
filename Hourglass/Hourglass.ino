@@ -3,7 +3,6 @@
 #include <U_ptr.hpp>
 #include <Stopwatch.hpp>
 #include <LinkedList.hpp>
-#include <ArrayList.hpp>
 #include <DigitalOutput.hpp>
 #include <DigitalInput.hpp>
 #include <InOutFactory.hpp>
@@ -43,8 +42,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   stopwatch->tick(millis());
-  auto start = start_button->read_value();
-  auto reset = reset_button->read_value();
+  start_button->read_value();
+  reset_button->read_value();
   auto time_stamp = stopwatch->get_time_stamp();
   Serial.print(time_stamp.minute);
   Serial.print(" : ");
