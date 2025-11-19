@@ -26,6 +26,10 @@ namespace InOut
   {
     class DigitalOutput;
 
+    /**
+     * Displays tens of minutes elapsed from a stopwatch on
+     * a 6 led display. Used in the Arduino starter kit project.
+     */
     class HourglassDisplay : public OutputBase
     {
     public:
