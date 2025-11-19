@@ -20,13 +20,13 @@ namespace InOut
       public:
       virtual ~DigitalInput(void) = default;
 
-      virtual bool is_active(void) const override;
+      bool is_active(void) const override;
 
       friend class InOut::Factory::InOutFactory;
 
       protected:
       DigitalInput(int pin_number);
-      virtual int do_read_value(void) override;
+      int do_read_value(void) override;
     };
   }
 }

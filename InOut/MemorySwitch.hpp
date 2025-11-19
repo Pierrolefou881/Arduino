@@ -23,9 +23,9 @@ namespace InOut
       friend class InOut::Factory::InOutFactory;
 
       protected:
-      MemorySwitch(const Util::Memory::S_ptr<InOut::Digital::DigitalInput>& input); // TOOD make private or protected to be used with factory
+      MemorySwitch(const Util::Memory::S_ptr<InOut::Digital::DigitalInput>& input);
       
-      virtual int do_read_value(void) override;
+      int do_read_value(void) override;
 
     private:
       Util::Memory::S_ptr<InOut::Digital::DigitalInput> _in{ };
