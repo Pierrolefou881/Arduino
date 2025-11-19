@@ -6,6 +6,7 @@
 #include "AnalogInput.hpp"
 #include "PWMOutput.hpp"
 #include "Speaker.hpp"
+#include "MemorySwitch.hpp"
 
 using namespace InOut;
 
@@ -61,4 +62,16 @@ Util::Memory::S_ptr<Sound::Speaker> Factory::InOutFactory::create_speaker(int pi
 {
   pinMode(pin_number, OUTPUT);
   return { new Sound::Speaker{ pin_number, sound_duration } };
+}
+
+/**
+ * Assigns digital input at the given pin number and creates a corresponding
+ * instance of MemorySwitch decorator.
+ * @param pin_number must correspond to a physical pin connected to a digital sensor.
+ * @return a pointer to the newly created MemorySwitch decorator.
+ */
+Util::Memory::S_ptr<Digital::MemorySwitch> Factory::InOutFactory::create_memory_switch(int pin_number)
+{
+  auto input = create_digital_input(pin_number);
+  return { new Digital::MemorySwitch{ input } };
 }

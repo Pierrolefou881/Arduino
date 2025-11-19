@@ -16,6 +16,7 @@ namespace InOut
   {
     class DigitalOutput;
     class DigitalInput;
+    class MemorySwitch;
   }
 
   namespace Analog
@@ -41,6 +42,8 @@ namespace InOut
 
         static Util::Memory::S_ptr<InOut::Sound::Speaker> create_speaker(
           int pin_number, int sound_duration = InOut::Sound::Speaker::DEFAULT_DURATION_MS);
+
+        static Util::Memory::S_ptr<InOut::Digital::MemorySwitch> create_memory_switch(int pin_number);
     };
   }
 }
