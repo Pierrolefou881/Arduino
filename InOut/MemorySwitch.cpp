@@ -11,7 +11,7 @@
 InOut::Digital::MemorySwitch::MemorySwitch(const Util::Memory::S_ptr<InOut::Digital::DigitalInput>& input)
   : DigitalInput{ input->get_pin_number() }, _in{ input }, _memory_state{ LOW }
 {
-  input->StateChanged->add(this, &on_input_state_changed);
+  input->StateChanged->add(this, &InOut::Digital::MemorySwitch::on_input_state_changed);
 }
 
 /**

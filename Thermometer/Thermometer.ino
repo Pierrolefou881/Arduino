@@ -24,6 +24,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   auto temp = _thermo->read_celsius();
+  Serial.print(_thermo->read_celsius());
   Serial.print(temp);
   Serial.print('\t');
   Serial.print(_thermo->read_farenheit());
