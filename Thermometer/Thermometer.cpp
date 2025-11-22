@@ -22,7 +22,7 @@ const float Sensor::TemperatureData::FARENHEIT_CONSTANT = 32.0f;
  * Constant used to convert a temcperature in Celsius to Kelvin.
  * Reminder: K = C + 273.15.
  */
-const float Sensor::TemperatureData::KELVIN_CONSTANT = 273.15;
+const float Sensor::TemperatureData::KELVIN_CONSTANT = 273.15f;
 
 /**
  * Converts a temperature from Celsius to Farenheit.

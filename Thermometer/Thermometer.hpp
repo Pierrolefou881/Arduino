@@ -27,9 +27,9 @@ namespace Sensor
     static float celsius_to_farenheit(float temperature_c);
     static float celsius_to_kelvin(float temperature_c);
 
-    int celsius{ };
-    int farenheit{ };
-    int kelvin{ };
+    float celsius{ };
+    float farenheit{ };
+    float kelvin{ };
 
     /**
      * Initializes this TemperatureData with the provided temperature in all
@@ -38,7 +38,7 @@ namespace Sensor
      * @param f in farenheit.
      * @param k in kelvin.
      */
-    TemperatureData(int c, int f, int k) : celsius{ c }, farenheit{ f }, kelvin{ k }
+    TemperatureData(float c, float f, float k) : celsius{ c }, farenheit{ f }, kelvin{ k }
     {
       // Empty body
     }

@@ -18,7 +18,7 @@ const char DigitalClock::Display::TimeDisplay::SEPARATOR{ ':' };
 DigitalClock::Display::TimeDisplay::TimeDisplay(const Util::Memory::S_ptr<LiquidCrystal>& screen,
                                                 const Util::Memory::S_ptr<Time::BaseClock>& clock, 
                                                 int screen_width)
-  : DigitalClock::Display::TimeDisplay::DisplayBase(screen)
+  : DigitalClock::Display::TimeDisplay::DisplayBase{ screen }
   , _clock{ clock }
   , _hour_index{ (screen_width - DISPLAY_WIDTH) / 2 }
   , _minute_index{ _hour_index + 3 }
@@ -36,11 +36,7 @@ DigitalClock::Display::TimeDisplay::TimeDisplay(const Util::Memory::S_ptr<Liquid
   _clock->HourElapsed->add(this, &DigitalClock::Display::TimeDisplay::on_hour_elapsed);
 
   // Force update on the screen
-  auto time_stamp = _clock->get_time_stamp();
-  auto clk_ptr = _clock.get();
-  on_hour_elapsed(clk_ptr, time_stamp);
-  on_minute_elapsed(clk_ptr, time_stamp);
-  on_second_elapsed(clk_ptr, time_stamp);
+  on_day_elapsed(_clock.get(), _clock->get_time_stamp());
 }
 
 DigitalClock::Display::TimeDisplay::~TimeDisplay(void)
@@ -48,44 +44,6 @@ DigitalClock::Display::TimeDisplay::~TimeDisplay(void)
   _clock->HourElapsed->remove(this, &DigitalClock::Display::TimeDisplay::on_hour_elapsed);
   _clock->MinuteElapsed->remove(this, &DigitalClock::Display::TimeDisplay::on_minute_elapsed);
   _clock->SecondElapsed->remove(this, &DigitalClock::Display::TimeDisplay::on_second_elapsed);
-}
-
-/**
- * Does nothing. Data update is done through events.
- */
-void DigitalClock::Display::TimeDisplay::update(void)
-{
-  // Empty body
-}
-
-/**
- * Refreshes the display of the seconds segment.
- * @param sender must be the same as _clock member and not null.
- * @param args time to display.
- */
-void DigitalClock::Display::TimeDisplay::on_second_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
-{
-  write(_second_index, args.second);  
-}
-
-/**
- * Refreshes the display of the minutes segment.
- * @param sender must be the same as _clock member and not null.
- * @param args time to display.
- */
-void DigitalClock::Display::TimeDisplay::on_minute_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
-{
-  write(_minute_index, args.minute);
-}
-
-/**
- * Refreshes the display of the hours segment.
- * @param sender must be the same as _clock member and not null.
- * @param args time to display.
- */
-void DigitalClock::Display::TimeDisplay::on_hour_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
-{
-  write(_hour_index, args.hour);
 }
 
 void DigitalClock::Display::TimeDisplay::write(int desired_index, int value)
@@ -98,4 +56,26 @@ void DigitalClock::Display::TimeDisplay::write(int desired_index, int value)
     screen->setCursor(desired_index + 1, DISPLAY_ROW);
   }
   screen->print(value);
+}
+
+void DigitalClock::Display::TimeDisplay::on_second_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
+{
+  write(_second_index, args.second);  
+}
+
+void DigitalClock::Display::TimeDisplay::on_minute_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
+{
+  write(_minute_index, args.minute);
+  on_second_elapsed(sender, args);
+}
+
+void DigitalClock::Display::TimeDisplay::on_hour_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
+{
+  write(_hour_index, args.hour);
+  on_minute_elapsed(sender, args);
+}
+
+void DigitalClock::Display::TimeDisplay::on_day_elapsed(const Time::BaseClock* sender, const Time::TimeData& args)
+{
+  on_hour_elapsed(sender, args);
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "BaseClock.hpp"
 #include <S_ptr.hpp>
 #include <U_ptr.hpp>
 #include <EventHandler.hpp>
@@ -17,19 +17,16 @@ namespace Time
   {
     static const int MONTH_DURATIONS[];
     static const int DEFAULT_YEAR_DURATION;
+    static const int WEEK_DURATION;
+    static int find_week_day(DateData& date);
     static bool is_leap_year(int year);
+    int week_day{ };
     int day{ };
     int month{ };
     int year{ };
 
-    /**
-     * Initializes a default DateData on Jan 1st, 2020. This
-     * is an arbitrarily chosen default date.
-     */
-    DateData(void) : day{ 1 }, month{ 1 }, year{ 2020 } 
-    {
-      // Empty body
-    }
+    DateData(void);
+    virtual ~DateData(void) = default;
   };
 
   /**
@@ -43,8 +40,8 @@ namespace Time
     Util::Memory::U_ptr<Util::Event::EventHandler<const Calendar, const DateData&>> MonthElapsed{ new Util::Event::EventHandler<const Calendar, const DateData&>{ } };
     Util::Memory::U_ptr<Util::Event::EventHandler<const Calendar, const DateData&>> YearElapsed{ new Util::Event::EventHandler<const Calendar, const DateData&>{ } };
 
-    virtual ~Calendar(void) = default;
-    void assign_clock(const Util::Memory::S_ptr<Time::BaseClock>& clock);
+    Calendar(const Util::Memory::S_ptr<Time::BaseClock>& clock);
+    virtual ~Calendar(void);
 
     const Time::DateData& get_date_stamp(void) const;
     void set_date_stamp(const Time::DateData& date_stamp);

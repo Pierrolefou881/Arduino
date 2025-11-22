@@ -10,8 +10,7 @@ Util::Memory::U_ptr<Time::Calendar> cal{ };
 void setup() {
   // put your setup code here, to run once:
   clk = new Time::BaseClock{ };
-  cal = new Time::Calendar{ };
-  cal->assign_clock(clk);
+  cal = new Time::Calendar{ clk };
   cal->DayElapsed->add(&calendar_updated);
   delay(5);
   cal->MonthElapsed->add(&calendar_updated);
