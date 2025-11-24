@@ -1,29 +1,32 @@
+#include "DigitalInput.hpp"
+#include "DigitalOutput.hpp"
 #include "AnalogInput.hpp"
+#include "PWMOutput.hpp"
 #include "Speaker.hpp"
+#include "MemorySwitch.hpp"
+#include "CapacitiveInput.hpp"
 #include "InOutFactory.hpp"
 #include <S_ptr.hpp>
 
-Util::Memory::S_ptr<InOut::Sound::Speaker> speaker{ };
-bool is_incrementing{ };
-int current_frequency;
+Util::Memory::S_ptr<InOut::Analog::CapacitiveInput> touch_switch{ };
+Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
 
 void setup() {
   // put your setup code here, to run once:
-  speaker = InOut::Factory::InOutFactory::create_speaker(8);
-  current_frequency = InOut::Sound::Speaker::MIN_FREQUENCY;
+  touch_switch = new InOut::Analog::CapacitiveInput{ 8, 12 };
+  led = InOut::Factory::InOutFactory::create_digital_output(2);
   Serial.begin(9600);
 }
 
 void loop() {
-  if (current_frequency >= InOut::Sound::Speaker::MAX_FREQUENCY)
+  auto value = touch_switch->read_value();
+  if (touch_switch->is_active())
   {
-    is_incrementing = false;
+    led->turn_on();
   }
-  if (current_frequency <= InOut::Sound::Speaker::MIN_FREQUENCY)
+  else 
   {
-    is_incrementing = true;
+    led->turn_off();
   }
-
-  // speaker->write_value(current_frequency);
-  Serial.println(is_incrementing ? current_frequency++ : current_frequency--);
+  Serial.println(value);
 }
