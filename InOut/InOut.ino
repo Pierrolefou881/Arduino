@@ -5,28 +5,24 @@
 #include "Speaker.hpp"
 #include "MemorySwitch.hpp"
 #include "CapacitiveInput.hpp"
+#include "CapacitiveDigitalInput.hpp"
 #include "InOutFactory.hpp"
 #include <S_ptr.hpp>
 
 Util::Memory::S_ptr<InOut::Analog::CapacitiveInput> touch_switch{ };
+Util::Memory::S_ptr<InOut::Digital::CapacitiveDigitalInput> digital_touch{ };
 Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
 
 void setup() {
   // put your setup code here, to run once:
   touch_switch = InOut::Factory::InOutFactory::create_capacitive_input(8, 12);
+  digital_touch = new InOut::Digital::CapacitiveDigitalInput{ touch_switch };
   led = InOut::Factory::InOutFactory::create_digital_output(2);
   Serial.begin(9600);
 }
 
 void loop() {
   auto value = touch_switch->read_value();
-  if (touch_switch->is_active())
-  {
-    led->turn_on();
-  }
-  else 
-  {
-    led->turn_off();
-  }
+  led->write_value(digital_touch->read_value());
   Serial.println(value);
 }

@@ -10,14 +10,14 @@ namespace InOut
    */
   class InputBase : public InOutBase
   {
-    public:
+  public:
     InputBase(int pin_number);
     virtual ~InputBase(void) = default;
 
     int read_value(void);
     virtual bool is_active(void) const = 0;
 
-    protected:
+  protected:
     virtual int do_read_value(void) = 0;
   };
 }
