@@ -35,6 +35,18 @@ Util::Memory::S_ptr<Digital::DigitalInput> Factory::InOutFactory::create_digital
 }
 
 /**
+ * Assigns digital input at the given pin number and creates a corresponding
+ * instance of MemorySwitch decorator.
+ * @param pin_number must correspond to a physical pin connected to a digital sensor.
+ * @return a pointer to the newly created MemorySwitch decorator.
+ */
+Util::Memory::S_ptr<Digital::MemorySwitch> Factory::InOutFactory::create_memory_switch(int pin_number)
+{
+  auto input = create_digital_input(pin_number);
+  return { new Digital::MemorySwitch{ input } };
+}
+
+/**
  * @param pin_number must correspond to a physical pin connected to a analog sensor.
  * @return a pointer to a newly created AnalogInput instance referring to pin number.
  */
@@ -54,6 +66,19 @@ Util::Memory::S_ptr<Analog::PWMOutput> Factory::InOutFactory::create_pwm_output(
 }
 
 /**
+ * Creates a CapacitiveInput wrapper facade for the Arduino Starter pack CapacitiveSensor class.
+ * @param sender_pin connected to a 1MOhm resistor.
+ * @param receive_pin connected to the other end of the resistor and the capacitive touch area.
+ * @param samples per call of the sensor, defaulted to 30.
+ * @param threshold to consider the sensor active, defaulted to 1000.
+ * @return a pointer to a newly created CapacitiveInput instance connected to the provided pins.
+ */
+Util::Memory::S_ptr<Analog::CapacitiveInput> Factory::InOutFactory::create_capacitive_input(int sender_pin, int receive_pin, int samples, int threshold)
+{
+  return { new Analog::CapacitiveInput{ sender_pin, receive_pin, samples, threshold } };
+}
+
+/**
  * @param pin_number must correspond to a physical pin connected to a speaker system.
  * @param sound_duration in mS of each sound emitted. If not provided, default value assigned.
  * @return a pointer to a newly created Speaker instance referring to pin number.
@@ -62,16 +87,4 @@ Util::Memory::S_ptr<Sound::Speaker> Factory::InOutFactory::create_speaker(int pi
 {
   pinMode(pin_number, OUTPUT);
   return { new Sound::Speaker{ pin_number, sound_duration } };
-}
-
-/**
- * Assigns digital input at the given pin number and creates a corresponding
- * instance of MemorySwitch decorator.
- * @param pin_number must correspond to a physical pin connected to a digital sensor.
- * @return a pointer to the newly created MemorySwitch decorator.
- */
-Util::Memory::S_ptr<Digital::MemorySwitch> Factory::InOutFactory::create_memory_switch(int pin_number)
-{
-  auto input = create_digital_input(pin_number);
-  return { new Digital::MemorySwitch{ input } };
 }

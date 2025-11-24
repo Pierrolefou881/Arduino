@@ -13,7 +13,7 @@ Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
 
 void setup() {
   // put your setup code here, to run once:
-  touch_switch = new InOut::Analog::CapacitiveInput{ 8, 12 };
+  touch_switch = InOut::Factory::InOutFactory::create_capacitive_input(8, 12);
   led = InOut::Factory::InOutFactory::create_digital_output(2);
   Serial.begin(9600);
 }

@@ -7,6 +7,11 @@ class CapacitiveSensor;
 
 namespace InOut
 {
+  namespace Factory
+  {
+    class InOutFactory;
+  }
+
   namespace Analog
   {
     /**
@@ -15,13 +20,16 @@ namespace InOut
     class CapacitiveInput : public InputBase
     {
     public:
-      CapacitiveInput(int sender_pin, int receive_pin, int samples = DEFAULT_SAMPLES, int threshold = DEFAULT_THRESHOLD);
       virtual ~CapacitiveInput(void) = default;
       bool is_active(void) const override;
 
       int read_digital(void) const;
 
+      friend class InOut::Factory::InOutFactory;
+
     protected:
+      CapacitiveInput(int sender_pin, int receive_pin, int samples = DEFAULT_SAMPLES, int threshold = DEFAULT_THRESHOLD);
+      
       int do_read_value(void) override;
     
     private:
