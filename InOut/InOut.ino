@@ -15,14 +15,13 @@ Util::Memory::S_ptr<InOut::Digital::DigitalOutput> led{ };
 
 void setup() {
   // put your setup code here, to run once:
-  touch_switch = InOut::Factory::InOutFactory::create_capacitive_input(8, 12);
-  digital_touch = new InOut::Digital::CapacitiveDigitalInput{ touch_switch };
+  // touch_switch = InOut::Factory::InOutFactory::create_capacitive_input(8, 12);
+  digital_touch = InOut::Factory::InOutFactory::create_capacitive_digital_input(8, 12);
   led = InOut::Factory::InOutFactory::create_digital_output(2);
   Serial.begin(9600);
 }
 
 void loop() {
-  auto value = touch_switch->read_value();
   led->write_value(digital_touch->read_value());
-  Serial.println(value);
+  // Serial.println(touch_switch->read_value());
 }

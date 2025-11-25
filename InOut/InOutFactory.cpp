@@ -7,6 +7,7 @@
 #include "PWMOutput.hpp"
 #include "Speaker.hpp"
 #include "MemorySwitch.hpp"
+#include "CapacitiveDigitalInput.hpp"
 
 using namespace InOut;
 
@@ -44,6 +45,21 @@ Util::Memory::S_ptr<Digital::MemorySwitch> Factory::InOutFactory::create_memory_
 {
   auto input = create_digital_input(pin_number);
   return { new Digital::MemorySwitch{ input } };
+}
+
+/**
+ * Creates a CapacitiveDigitalInput wrapper facade for the Arduino Starter pack CapacitiveSensor class.
+ * @param sender_pin connected to a 1MOhm resistor.
+ * @param receive_pin connected to the other end of the resistor and the capacitive touch area.
+ * @param samples per call of the sensor, defaulted to 30.
+ * @param threshold to consider the sensor active, defaulted to 1000.
+ * @return a pointer to a newly created CapacitiveDigitalInput instance connected to the provided pins.
+ * @see InOut::Analog::CapacitiveInput
+ */
+Util::Memory::S_ptr<Digital::CapacitiveDigitalInput> Factory::InOutFactory::create_capacitive_digital_input(int sender_pin, int receive_pin, int samples, int threshold)
+{
+  auto analog = create_capacitive_input(sender_pin, receive_pin, samples, threshold);
+  return { new InOut::Digital::CapacitiveDigitalInput{ analog } };
 }
 
 /**
